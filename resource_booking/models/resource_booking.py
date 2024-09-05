@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.resource.models.resource import Intervals
+from odoo.addons.resource.models.utils import Intervals
 
 
 def _merge_intervals(intervals):
@@ -144,7 +144,7 @@ class ResourceBooking(models.Model):
         domain="[('type_rel_ids.type_id', 'in', [type_id])]",
         index=True,
         readonly=False,
-        states={"scheduled": [("required", True)], "confirmed": [("required", True)]},
+        required="state in ['scheduled', 'confirmed']",
         store=True,
         tracking=True,
     )
@@ -684,6 +684,24 @@ class ResourceBooking(models.Model):
         return super().unlink()
 
     def name_get(self):
+        """Autogenerate booking name if none is provided."""
+        old = super().name_get()
+        new = []
+        for id_, name in old:
+            record = self.browse(id_)
+            if self.env.context.get("using_portal"):
+                # ID optionally suffixed with custom name for portal users
+                template = _("# %(id)d - %(name)s") if record.name else _("# %(id)d")
+                name = template % {"id": id_, "name": name}
+            elif not record.name:
+                # Automatic name for backend users
+                name = self._get_name_formatted(
+                    record.partner_ids[0], record.type_id, record.meeting_id
+                )
+            new.append((id_, name))
+        return new
+
+    def _compute_display_name(self):
         """Autogenerate booking name if none is provided."""
         old = super().name_get()
         new = []

@@ -6,7 +6,7 @@ from pytz import UTC
 
 from odoo import api, fields, models
 
-from odoo.addons.resource.models.resource import Intervals
+from odoo.addons.resource.models.utils import Intervals
 
 
 class Busy(Exception):

@@ -13,7 +13,7 @@ from odoo import fields
 from odoo.exceptions import ValidationError
 from odoo.tests.common import Form, TransactionCase, new_test_user, users
 
-from odoo.addons.resource.models.resource import Intervals
+from odoo.addons.resource.models.utils import Intervals
 from odoo.addons.resource_booking.models.resource_booking import (
     _availability_is_fitting,
 )

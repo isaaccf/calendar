@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright 2021 Tecnativa - Jairo Llopis
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <data>
@@ -44,7 +44,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="requester_advice" invisible="1" />
+                    <field name="requester_advice" column_invisible="1" />
                     <button
                         name="%(portal.portal_share_action)d"
                         class="oe_highlight"
@@ -68,14 +68,14 @@
                         string="Schedule"
                         type="object"
                         help="Open a calendar to schedule a meeting for this booking request."
-                        attrs="{'invisible': ['|', ('is_modifiable', '=', False), ('state', '!=', 'pending')]}"
+                        invisible="(is_modifiable == False) or (state != 'pending')"
                     />
                     <button
                         name="action_confirm"
                         string="Confirm"
                         type="object"
                         help="Confirm that the requesting partner and yourself will attend the scheduled meeting."
-                        attrs="{'invisible': ['|', ('is_modifiable', '=', False), ('state', '!=', 'scheduled')]}"
+                        invisible="(is_modifiable == False) or (state != 'scheduled')"
                         context="{'confirm_own_attendance': True}"
                     />
                     <button
@@ -84,14 +84,14 @@
                         type="object"
                         help="Unschedule this booking."
                         confirm="This will remove the associated meeting to unschedule the booking. Are you sure?"
-                        attrs="{'invisible': ['|', ('is_modifiable', '=', False), ('meeting_id', '=', False)]}"
+                        invisible="(is_modifiable == False) or (meeting_id == False)"
                     />
                     <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
                         help="Unschedule this booking and archive it."
-                        attrs="{'invisible': ['|', '|', ('is_modifiable', '=', False), ('state', '=', 'canceled'), ('meeting_id', '!=', False)]}"
+                        invisible="(is_modifiable == False) or (state == 'canceled') or (meeting_id != False)"
                     />
                     <button
                         name="action_cancel"
@@ -99,24 +99,24 @@
                         type="object"
                         help="Unschedule this booking and archive it."
                         confirm="This will remove the associated meeting to unschedule the booking. Are you sure?"
-                        attrs="{'invisible': ['|', '|', ('is_modifiable', '=', False), ('state', '=', 'canceled'), ('meeting_id', '=', False)]}"
+                        invisible="(is_modifiable == False) or (state == 'canceled') or (meeting_id == False)"
                     />
                     <button
                         name="toggle_active"
                         string="Set pending"
                         type="object"
                         help="Set to pending"
-                        attrs="{'invisible': ['|', ('is_modifiable', '=', False), ('state', '!=', 'canceled')]}"
+                        invisible="(is_modifiable == False) or (state != 'canceled')"
                     />
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
-                    <field name="active" invisible="1" />
+                    <field name="active" column_invisible="1" />
                     <widget
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <div class="oe_button_box" name="button_box">
                         <button
@@ -142,18 +142,19 @@
                                 <field name="combination_auto_assign" />
                                 <label
                                     for="combination_auto_assign"
-                                    attrs="{'invisible': [('combination_auto_assign', '=', False)]}"
+                                    invisible="combination_auto_assign == False"
                                     string="Auto-assigned:"
                                 />
                                 <label
                                     for="combination_auto_assign"
-                                    attrs="{'invisible': [('combination_auto_assign', '=', True)]}"
+                                    invisible="combination_auto_assign == True"
                                     string="Manually assigned:"
                                 />
                                 <field
                                     name="combination_id"
                                     class="oe_inline"
-                                    attrs="{'required': [('combination_auto_assign', '=', False)], 'readonly': [('combination_auto_assign', '=', True)]}"
+                                    required="combination_auto_assign == False"
+                                    readonly="combination_auto_assign == True"
                                 />
                             </div>
                             <field name="categ_ids" widget="many2many_tags" />
@@ -161,13 +162,13 @@
                         <group name="meeting" string="Meeting">
                             <field name="meeting_id" readonly="1" />
                             <field name="user_id" />
-                            <field name="is_overdue" invisible="1" />
-                            <field name="is_modifiable" invisible="1" />
+                            <field name="is_overdue" column_invisible="1" />
+                            <field name="is_modifiable" column_invisible="1" />
                             <div
                                 colspan="2"
                                 role="alert"
                                 class="alert alert-warning"
-                                attrs="{'invisible': [('is_overdue', '=', False)]}"
+                                invisible="is_overdue == False"
                             >
                                 This booking exceeded its modifications deadline.
                             </div>
@@ -259,7 +260,8 @@
                 Define resource bookings.
             </p>
             <p>
-                When scheduled, resources will be blocked. When pending, it means the requester didn't place the booking yet.
+                When scheduled, resources will be blocked. When pending, it means the requester
+                didn't place the booking yet.
             </p>
         </field>
     </record>
